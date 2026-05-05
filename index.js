@@ -7,9 +7,7 @@ import authRouter from "./routes/authRoutes.js";
 
 const app = express();
 
-
 connectDB();
-
 
 app.use(express.json());
 app.use(cookieParser());
@@ -23,15 +21,12 @@ app.use(
   })
 );
 
-
 app.get("/", (req, res) => {
   console.log("Server working");
   res.send("Server has started");
 });
 
-
 app.use("/api/auth", authRouter);
-
 
 const PORT = process.env.PORT || 5000;
 

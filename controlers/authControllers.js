@@ -33,14 +33,14 @@ export const register = async(req,res)=>{
             subject:`Welcome to AUTHENTICATION APP. Your account has been created with email id:${email}`
         }
         await transporter.sendMail(mailOption);
-        // return res.json({success: true}); 
+        
         return res.json({
-  success: true,
-  user: {
-    name: user.name,
-    email: user.email
-  }
-});
+            success: true,
+            user: {
+            name: user.name,
+            email: user.email
+        }
+    });
     }
     catch(error){
         res.json({success:false , message: error.message})
@@ -75,26 +75,14 @@ export const login = async(req,res)=>{
     }
 }
 
-// export const logout = async(req,res)=>{
-//     try{
-//         res.clearCookie('token',{
-//             httpOnly:true,
-//             secure: process.env.NODE_ENV === 'production',
-//             sameSite: process.env.NODE_ENV === 'production'?'none':'strict',
-//         })
-//         return res.json({success:true,message:"Logged Out"});
-//     }
-//     catch(error){
-//         res.json({success:false,message:error.message})
-//     }
-// }
+
 
 export const logout = async (req, res) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      secure: false, // VERY IMPORTANT for localhost
-      sameSite: "lax", // change from 'strict'
+      secure: false,
+      sameSite: "lax",
     });
 
     return res.json({
