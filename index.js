@@ -12,7 +12,14 @@ connectDB();
 app.use(express.json());
 app.use(cookieParser());
 
-app.use(cors());
+const allowedOrigins = ["http://localhost:5173", "https://authentication-web-xax2-3qs7dsami.vercel.app"];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 
 app.get("/", (req, res) => {
   console.log("Server working");
