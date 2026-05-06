@@ -12,14 +12,7 @@ connectDB();
 app.use(express.json());
 app.use(cookieParser());
 
-const allowedOrigins = ["http://localhost:5173", "https://authentication-web-backend-production.up.railway.app"];
-
-app.use(
-  cors({
-    origin: allowedOrigins,
-    credentials: true,
-  })
-);
+app.use(cors());
 
 app.get("/", (req, res) => {
   console.log("Server working");
