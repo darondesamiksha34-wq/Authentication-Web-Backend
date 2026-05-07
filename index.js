@@ -14,9 +14,18 @@ app.use(cookieParser());
 
 const allowedOrigins = ["http://localhost:5173", "https://authentication-web-xax2-pjjmzzou9.vercel.app"];
 
+// app.use(
+//   cors({
+//     origin: allowedOrigins,
+//     credentials: true,
+//   })
+// );
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: [
+      "http://localhost:5173",
+      "https://authentication-web-xax2.vercel.app",
+    ],
     credentials: true,
   })
 );
