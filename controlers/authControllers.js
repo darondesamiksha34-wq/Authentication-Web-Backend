@@ -26,13 +26,15 @@ export const register = async(req,res)=>{
         })
         const subject = 'Welcome to CodeMate.';
         const text = `Welcome to AUTHENTICATION APP. Your account has been created with email id:${email}`;
-        await sendemail({email,subject,text});
-        const mailOption ={
-            from: process.env.SENDER_EMAIL,
-            to: email,
-            subject:`Welcome to AUTHENTICATION APP. Your account has been created with email id:${email}`
-        }
-        await transporter.sendMail(mailOption);
+        // await sendemail({email,subject,text});
+        // const mailOption ={
+        //     from: process.env.SENDER_EMAIL,
+
+        
+        //     to: email,
+        //     subject:`Welcome to AUTHENTICATION APP. Your account has been created with email id:${email}`
+        // }
+        // await transporter.sendMail(mailOption);
         
         return res.json({
             success: true,
