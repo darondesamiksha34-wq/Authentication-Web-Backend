@@ -4,10 +4,18 @@ import usermodel from '../models/usermodel.js';
 import { sendemail, transporter } from '../config/nodeMailer.js';
 import { text } from 'express';
 
-export const register = async(req,res)=>{
+// export const register = async(req,res)=>{
+    // const {name,email,password} = req.body;
+    // if(!name || !email || !password){
+    //     return res.json({sucess: false,message: "Details are missing"})
+    // }
+    export const register = async(req,res)=>{
     const {name,email,password} = req.body;
+
+    console.log("Incoming Data:", name, email, password);
+
     if(!name || !email || !password){
-        return res.json({sucess: false,message: "Details are missing"})
+        return res.json({success: false,message: "Details are missing"})
     }
     try{
         const existingUser = await usermodel.findOne({email});
@@ -74,8 +82,6 @@ export const login = async(req,res)=>{
         res.json({success:false , message: error.message})
     }
 }
-
-
 
 export const logout = async (req, res) => {
   try {
