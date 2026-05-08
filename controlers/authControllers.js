@@ -4,135 +4,50 @@ import usermodel from '../models/usermodel.js';
 import { sendemail, transporter } from '../config/nodeMailer.js';
 import { text } from 'express';
 
-// export const register = async(req,res)=>{
-//     const {name,email,password} = req.body;
-//     if(!name || !email || !password){
-//         return res.json({sucess: false,message: "Details are missing"})
-//     }
-//     try{
-//         const existingUser = await usermodel.findOne({email});
-//         if(existingUser){
-//             return res.json({success: false,message: "user already exists"})
-//         }
-//         const hashedPassword = await bcrypt.hash(password,10);
-//         const user = new usermodel({name,email,password: hashedPassword});
-//         await user.save();
-//         const token = jwt.sign({id: user._id},process.env.JWT_SECRET,{expiresIn: '7d'});
-//         res.cookie('token',token,{
-//             httpOnly: true,
-//             secure: process.env.NODE_ENV === 'production',
-//             sameSite: process.env.NODE_ENV === 'production'?'none' : 'strict',
-//             maxAge: 7*24*60*60*1000
-//         })
-//         const subject = 'Welcome to CodeMate.';
-//         const text = `Welcome to AUTHENTICATION APP. Your account has been created with email id:${email}`;
-//         // await sendemail({email,subject,text});
-//         // const mailOption ={
-//         //     from: process.env.SENDER_EMAIL,
+export const register = async(req,res)=>{
+    const {name,email,password} = req.body;
+    if(!name || !email || !password){
+        return res.json({sucess: false,message: "Details are missing"})
+    }
+    try{
+        const existingUser = await usermodel.findOne({email});
+        if(existingUser){
+            return res.json({success: false,message: "user already exists"})
+        }
+        const hashedPassword = await bcrypt.hash(password,10);
+        const user = new usermodel({name,email,password: hashedPassword});
+        await user.save();
+        const token = jwt.sign({id: user._id},process.env.JWT_SECRET,{expiresIn: '7d'});
+        res.cookie('token',token,{
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production'?'none' : 'strict',
+            maxAge: 7*24*60*60*1000
+        })
+        const subject = 'Welcome to CodeMate.';
+        const text = `Welcome to AUTHENTICATION APP. Your account has been created with email id:${email}`;
+        // await sendemail({email,subject,text});
+        // const mailOption ={
+        //     from: process.env.SENDER_EMAIL,
 
         
-//         //     to: email,
-//         //     subject:`Welcome to AUTHENTICATION APP. Your account has been created with email id:${email}`
-//         // }
-//         // await transporter.sendMail(mailOption);
+        //     to: email,
+        //     subject:`Welcome to AUTHENTICATION APP. Your account has been created with email id:${email}`
+        // }
+        // await transporter.sendMail(mailOption);
         
-//         return res.json({
-//             success: true,
-//             user: {
-//             name: user.name,
-//             email: user.email
-//         }
-//     });
-//     }
-//     catch(error){
-//         res.json({success:false , message: error.message})
-//     }
-// }
-
-
-
-
-export const register = async (req, res) => {
-  try {
-    let { name, email, password } = req.body;
-
-    // ✅ Basic validation
-    if (!name || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required",
-      });
+        return res.json({
+            success: true,
+            user: {
+            name: user.name,
+            email: user.email
+        }
+    });
     }
-
-    // ✅ Normalize email (VERY IMPORTANT)
-    email = email.toLowerCase().trim();
-
-    // ✅ Check existing user
-    const existingUser = await usermodel.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: "User already exists",
-      });
+    catch(error){
+        res.json({success:false , message: error.message})
     }
-
-    // ✅ Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // ✅ Create user
-    const user = new usermodel({
-      name,
-      email,
-      password: hashedPassword,
-    });
-
-    await user.save();
-
-    // ✅ Generate token
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    // ✅ Set cookie
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite:
-        process.env.NODE_ENV === "production" ? "none" : "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-
-    // ✅ (Optional) Send welcome email
-    /*
-    await sendemail({
-      email,
-      subject: "Welcome to AUTHENTICATION APP",
-      text: `Your account has been created with email: ${email}`,
-    });
-    */
-
-    // ✅ Success response
-    return res.status(201).json({
-      success: true,
-      message: "Account created successfully",
-      user: {
-        name: user.name,
-        email: user.email,
-      },
-    });
-
-  } catch (error) {
-    console.log("REGISTER ERROR:", error); // 🔥 VERY IMPORTANT
-
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
+}
 
 export const login = async(req,res)=>{
     const {email,password} = req.body;
@@ -140,10 +55,7 @@ export const login = async(req,res)=>{
         return res.json({success:false,message:"Email and Password are required"})
     }
     try{
-        // const user = await usermodel.findOne({email});
-        const user = await usermodel.findOne({
-  email: email.toLowerCase().trim()
-});
+        const user = await usermodel.findOne({email});
         if(!user){
             return res.json({success:false,message:"Invalid Email"})
         }
@@ -198,13 +110,13 @@ export const sendVerifyOtp = async(req,res)=>{
         user.verifyOtp = otp;
         user.verifyOtpExpiredAt = Date.now() + 24*60*60*1000
         await user.save();
-        const mailOptions = {
+        const sendemail = {
             from: process.env.SENDER_EMAIL,
             to: user.email,
             subject: 'Account Verification OTP',
             text: `Welcome to AUTHENTICATION APP. Your OTP is ${otp}. Verify you account using this OTP`
         }
-        await transporter.sendMail(mailOptions);
+        await transporter.sendMail(sendemail);
         res.json({success: true, message: "Verification OTP sent on Email"});
     }catch(error){
         res.json({
@@ -254,7 +166,7 @@ export const sendResetOtp = async(req,res)=>{
         return res.json({success:false,message:'Email is required'})
     }
     try{
-        const user = await usermodel.findOne({ email: email.toLowerCase().trim() });
+        const user = await usermodel.findOne({email});
         if(!user){
             return res.json({success:false,message:'User not found'})
         }
@@ -283,7 +195,7 @@ export const resetPassword = async(req,res)=>{
         return res.json({success: false,message:'Email,OTP ad New Password are required'});
     }
     try{
-        const user = await usermodel.findOne({ email: email.toLowerCase().trim() });
+        const user = await usermodel.findOne({email});
         if(!user){
             return res.json({success:false,message:'User not Found'})
         }
