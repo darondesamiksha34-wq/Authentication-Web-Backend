@@ -33,7 +33,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRouter);
 
 // ✅ FIXED PORT HANDLING
-const PORT = process.env.PORT || 8080;  // 🔥 IMPORTANT
+const PORT = process.env.PORT;
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is listening on port ${PORT}`);
