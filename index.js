@@ -12,7 +12,7 @@ connectDB();
 app.use(express.json());
 app.use(cookieParser());
 
-const allowedOrigins = ["http://localhost:5173", "https://authentication-web-xax2-pjjmzzou9.vercel.app"];
+const allowedOrigins = ["http://localhost:5173", "https://authentication-web-xax2-e4u5oosov.vercel.app"];
 
 // app.use(
 //   cors({
@@ -24,7 +24,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://authentication-web-xax2.vercel.app",
+      "https://authentication-web-xax2-e4u5oosov.vercel.app",
     ],
     credentials: true,
   })
