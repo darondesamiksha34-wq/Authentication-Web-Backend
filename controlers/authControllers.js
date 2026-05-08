@@ -110,13 +110,13 @@ export const sendVerifyOtp = async(req,res)=>{
         user.verifyOtp = otp;
         user.verifyOtpExpiredAt = Date.now() + 24*60*60*1000
         await user.save();
-        const sendemail = {
+        const mailOptions = {
             from: process.env.SENDER_EMAIL,
             to: user.email,
             subject: 'Account Verification OTP',
             text: `Welcome to AUTHENTICATION APP. Your OTP is ${otp}. Verify you account using this OTP`
         }
-        await transporter.sendMail(sendemail);
+        await transporter.sendMail(mailOptions);
         res.json({success: true, message: "Verification OTP sent on Email"});
     }catch(error){
         res.json({
