@@ -165,28 +165,48 @@ export const sendResetOtp = async(req,res)=>{
     if(!email){
         return res.json({success:false,message:'Email is required'})
     }
-    try{
-        const user = await usermodel.findOne({email});
-        if(!user){
-            return res.json({success:false,message:'User not found'})
-        }
-        const otp = String(Math.floor(100000 + Math.random()*900000));
-        user.resetOtp = otp;
-        user.resetOtpExpiredAt = Date.now() + 15*60*1000
-        await user.save();
-        const sendemail = {
-            from: process.env.SENDER_EMAIL,
-            to: user.email,
-            subject:'Password reset OTP received',
-            text:`Welcome to AUTHENTICATION APP. Your OTP for resetting your password is ${otp}.Use this OTP to proceed with resetting your Password`   
-        }
-        await transporter.sendMail(sendemail);
-        res.json({success:true,message:"Password reset OTP sent on Email"})
-    }
-    catch(error){
-        res.json({success:false,message:error.message})
-    }
+    try {
+   console.log("Sending OTP to:", user.email);
+
+   const info = await transporter.sendMail(sendemail);
+
+   console.log("Mail sent:", info.response);
+
+   res.json({
+      success:true,
+      message:"Password reset OTP sent on Email"
+   });
+
+} catch(error) {
+   console.log("EMAIL ERROR:", error);
+
+   res.json({
+      success:false,
+      message:error.message
+   });
 }
+//     try{
+//         const user = await usermodel.findOne({email});
+//         if(!user){
+//             return res.json({success:false,message:'User not found'})
+//         }
+//         const otp = String(Math.floor(100000 + Math.random()*900000));
+//         user.resetOtp = otp;
+//         user.resetOtpExpiredAt = Date.now() + 15*60*1000
+//         await user.save();
+//         const sendemail = {
+//             from: process.env.SENDER_EMAIL,
+//             to: user.email,
+//             subject:'Password reset OTP received',
+//             text:`Welcome to AUTHENTICATION APP. Your OTP for resetting your password is ${otp}.Use this OTP to proceed with resetting your Password`   
+//         }
+//         await transporter.sendMail(sendemail);
+//         res.json({success:true,message:"Password reset OTP sent on Email"})
+//     }
+//     catch(error){
+//         res.json({success:false,message:error.message})
+//     }
+// }
 
 export const resetPassword = async(req,res)=>{
     const {email,otp,newPassword} = req.body;

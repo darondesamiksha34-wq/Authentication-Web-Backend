@@ -24,7 +24,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://authentication-web-xax2-e4u5oosov.vercel.app",
+      "https://authentication-web-xax2.vercel.app",
     ],
     credentials: true,
   })
