@@ -2,12 +2,12 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import usermodel from '../models/usermodel.js';
 import { sendemail, transporter } from '../config/nodeMailer.js';
-// import { text } from 'express';
+import { text } from 'express';
 
 export const register = async(req,res)=>{
     const {name,email,password} = req.body;
     if(!name || !email || !password){
-        return res.json({success: false,message: "Details are missing"})
+        return res.json({sucess: false,message: "Details are missing"})
     }
     try{
         const existingUser = await usermodel.findOne({email});
@@ -111,7 +111,7 @@ export const sendVerifyOtp = async(req,res)=>{
         user.verifyOtpExpiredAt = Date.now() + 24*60*60*1000
         await user.save();
         const sendemail = {
-            from: process.env.SMTP_USER,
+            from: process.env.SENDER_EMAIL,
             to: user.email,
             subject: 'Account Verification OTP',
             text: `Welcome to AUTHENTICATION APP. Your OTP is ${otp}. Verify you account using this OTP`
@@ -160,62 +160,33 @@ export const isAuthenticated = async(req,res)=>{
     }
 }
 
-export const sendResetOtp = async (req, res) => {
-  const { email } = req.body;
-
-  if (!email) {
-    return res.json({
-      success: false,
-      message: "Email is required",
-    });
-  }
-
-  try {
-    const user = await usermodel.findOne({ email });
-
-    if (!user) {
-      return res.json({
-        success: false,
-        message: "User not found",
-      });
+export const sendResetOtp = async(req,res)=>{
+    const{email} = req.body;
+    if(!email){
+        return res.json({success:false,message:'Email is required'})
     }
-
-    const otp = String(
-      Math.floor(100000 + Math.random() * 900000)
-    );
-
-    user.resetOtp = otp;
-    user.resetOtpExpiredAt = Date.now() + 15 * 60 * 1000;
-
-    await user.save();
-
-    const mailOptions = {
-      from: process.env.SMTP_USER,
-      to: user.email,
-      subject: "Password Reset OTP",
-      text: `Your OTP for password reset is ${otp}`,
-    };
-
-    console.log("Sending OTP to:", user.email);
-
-    const info = await transporter.sendMail(mailOptions);
-
-    console.log("Mail sent:", info.response);
-
-    return res.json({
-      success: true,
-      message: "Password reset OTP sent on Email",
-    });
-
-  } catch (error) {
-    console.log("EMAIL ERROR:", error);
-
-    return res.json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
+    try{
+        const user = await usermodel.findOne({email});
+        if(!user){
+            return res.json({success:false,message:'User not found'})
+        }
+        const otp = String(Math.floor(100000 + Math.random()*900000));
+        user.resetOtp = otp;
+        user.resetOtpExpiredAt = Date.now() + 15*60*1000
+        await user.save();
+        const sendemail = {
+            from: process.env.SENDER_EMAIL,
+            to: user.email,
+            subject:'Password reset OTP received',
+            text:`Welcome to AUTHENTICATION APP. Your OTP for resetting your password is ${otp}.Use this OTP to proceed with resetting your Password`   
+        }
+        await transporter.sendMail(sendemail);
+        res.json({success:true,message:"Password reset OTP sent on Email"})
+    }
+    catch(error){
+        res.json({success:false,message:error.message})
+    }
+}
 
 export const resetPassword = async(req,res)=>{
     const {email,otp,newPassword} = req.body;
@@ -245,3 +216,7 @@ export const resetPassword = async(req,res)=>{
         res.json({success:false,message:error.message})
     }
 }
+
+
+
+
