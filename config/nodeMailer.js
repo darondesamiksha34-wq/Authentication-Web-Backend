@@ -25,11 +25,11 @@
 //     }
 // }
 
-
 import nodemailer from "nodemailer";
 
 export const transporter = nodemailer.createTransport({
   service: "gmail",
+
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_KEY,
@@ -38,7 +38,7 @@ export const transporter = nodemailer.createTransport({
 
 export const sendemail = async ({ email, subject, text }) => {
   try {
-    let info = await transporter.sendMail({
+    const info = await transporter.sendMail({
       from: process.env.SMTP_USER,
       to: email,
       subject,
