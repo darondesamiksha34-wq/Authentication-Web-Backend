@@ -2,12 +2,12 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import usermodel from '../models/usermodel.js';
 import { sendemail, transporter } from '../config/nodeMailer.js';
-import { text } from 'express';
+// import { text } from 'express';
 
 export const register = async(req,res)=>{
     const {name,email,password} = req.body;
     if(!name || !email || !password){
-        return res.json({sucess: false,message: "Details are missing"})
+        return res.json({success: false,message: "Details are missing"})
     }
     try{
         const existingUser = await usermodel.findOne({email});
@@ -111,7 +111,7 @@ export const sendVerifyOtp = async(req,res)=>{
         user.verifyOtpExpiredAt = Date.now() + 24*60*60*1000
         await user.save();
         const sendemail = {
-            from: process.env.SENDER_EMAIL,
+            from: process.env.SMTP_USER,
             to: user.email,
             subject: 'Account Verification OTP',
             text: `Welcome to AUTHENTICATION APP. Your OTP is ${otp}. Verify you account using this OTP`
@@ -190,7 +190,7 @@ export const sendResetOtp = async (req, res) => {
     await user.save();
 
     const mailOptions = {
-      from: process.env.SENDER_EMAIL,
+      from: process.env.SMTP_USER,
       to: user.email,
       subject: "Password Reset OTP",
       text: `Your OTP for password reset is ${otp}`,
